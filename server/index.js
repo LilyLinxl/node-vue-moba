@@ -1,7 +1,7 @@
 const express = require('express')
 
 const app = express()
-
+app.set('secret','i2jdso393jcjsksk')
 app.use(require('cors')())//引入跨域模块
 app.use(express.json())
 app.use('/uploads',express.static(__dirname + '/uploads'))
