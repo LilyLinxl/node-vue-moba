@@ -324,5 +324,47 @@ http-assert用来给错误清空返回错误状态码和提示信息的api
 封装登录校验中间件
 将中间件单独封装到文件中
 导出函数便于配置，更灵活
+### 6.客户端路由限制(beforeEach,meta)
++ 1.给login的路由加路由元信息，isPublic
+```javascript
+  { path:'/login',name:'login',component:Login,meta:{ isPublic: true}},
+```
+
++ 2.添加导航守卫，当没有token信息，isPublic为false时跳转回login页
+```javascript
+router.beforeEach((to,from,next) => {
+  if(!to.mata.isPublic && !localStorage.token){
+    return next('/login')
+  }
+  next()
+})
+```
+### 7.上传文件的登录校验 (el-upload, headers)
+因为后端加了权限验证的中间件，所以要在上传文件的地方加上授权
+在上传组件上加authorization，但是一般都会把authorization放在全局
+使用mixin（混淆在全局的vue实例），放一些全局使用的东西
+```javascript
+Vue.mixin({
+  computed:{
+    uploadUrl(){
+      return this.$http.defaults.baseURL + '/upload'
+    }
+  },
+  methods:{
+    getAuthHeaders(){
+      return {
+        Authorization:`Bearer ${localStorage.token}`
+      }
+    }
+  }
+})
+```
+组件上使用属性和方法
+```html
+ <el-upload
+  class="avatar-uploader"
+  :action="uploadUrl"
+  :headers="getAuthHeaders()"
+```
 
 
